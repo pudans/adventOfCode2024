@@ -8,8 +8,8 @@ class Day09 : Base<List<Int>, Long>(9) {
         buildList {
             input.mapIndexed { index, int ->
                 when {
-                    index % 2 == 0 -> repeat(int) { add((index / 2).toString().first()) }
-                    else -> repeat(int) { add('.') }
+                    index % 2 == 0 -> repeat(int) { add((index / 2).toString()) }
+                    else -> repeat(int) { add(".") }
                 }
             }
         }
@@ -18,17 +18,17 @@ class Day09 : Base<List<Int>, Long>(9) {
                     var i1 = 0
                     var i2 = list.lastIndex
                     while (i1 <= i2) {
-                        if (list[i1] != '.') {
+                        if (list[i1] != ".") {
                             add(list[i1]); i1++
-                        } else if (list[i1] == '.' && list[i2] != '.') {
+                        } else if (list[i1] == "." && list[i2] != ".") {
                             add(list[i2]); i2--; i1++
-                        } else if (list[i2] == '.') {
+                        } else if (list[i2] == ".") {
                             i2--
                         }
                     }
                 }
             }
-            .map { it.toString().toInt() }
+            .map { it.toInt() }
             .foldIndexed(0L) { index, r, it ->
                 r + it * index
             }
@@ -41,7 +41,7 @@ class Day09 : Base<List<Int>, Long>(9) {
 
 fun main() {
     Day09().submitPart1TestInput() // 1928
-    Day09().submitPart1Input() // 5776434966 is wrong
+    Day09().submitPart1Input() // 6241633730082
 //    Day09().submitPart2TestInput()
 //    Day09().submitPart2Input()
 }
