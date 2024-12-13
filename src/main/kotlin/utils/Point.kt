@@ -1,6 +1,6 @@
 package day01.utils
 
-data class Point(
-    val x: Int,
-    val y: Int
+data class Point<T>(
+    val x: T,
+    val y: T
 )
