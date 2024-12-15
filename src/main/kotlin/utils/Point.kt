@@ -15,5 +15,13 @@ fun Point<Int>.move(direction: Direction): Point<Int> =
         Direction.LEFT -> Point(this.x - 1, this.y)
     }
 
+fun Point<Int>.move1(direction: Direction): Point<Int> =
+    when (direction) {
+        Direction.UP -> Point(this.x - 1, this.y)
+        Direction.DOWN -> Point(this.x + 1, this.y)
+        Direction.RIGHT -> Point(this.x, this.y + 1)
+        Direction.LEFT -> Point(this.x, this.y - 1)
+    }
+
 fun Point<Int>.distance(anotherPoint: Point<Int>): Int =
     (abs(this.x - anotherPoint.y) * abs(this.y - anotherPoint.y))

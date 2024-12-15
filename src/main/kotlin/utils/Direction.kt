@@ -12,3 +12,11 @@ enum class Direction {
         }
     }
 }
+
+fun Direction.turnRight(): Direction =
+    when (this) {
+        Direction.RIGHT -> Direction.DOWN
+        Direction.UP -> Direction.RIGHT
+        Direction.DOWN -> Direction.LEFT
+        Direction.LEFT -> Direction.UP
+    }
