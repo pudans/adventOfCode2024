@@ -16,25 +16,19 @@ class Day13 : Base<List<Day13.Play>, Long>(13) {
         val prize: Point<Double>
     )
 
-    override fun part1(input: List<Play>): Long = input.fold(0L) { r, play ->
-        val result = resolve(play)
-        r + result
-    }
+    override fun part1(input: List<Play>): Long = input.fold(0L) { r, play -> r + resolve(play) }
 
 //    Button A: X+94, Y+34
 //    Button B: X+22, Y+67
 //    Prize: X=8400, Y=5400
 
     private fun resolve(play: Play): Long {
-        val b = ((play.prize.x * play.a.y - play.prize.y * play.a.x) / (play.b.x * play.a.y - play.a.x * play.b.y))
-        val a = ((play.prize.y / play.a.y) - (play.b.y * b) / play.a.y)
-        val test1 = (play.a.x * a + play.b.x * b).roundToLong() == play.prize.x.roundToLong()
-        val test2 = (play.a.y * a + play.b.y * b).roundToLong() == play.prize.y.roundToLong()
+        val b = ((play.prize.x * play.a.y - play.prize.y * play.a.x) / (play.b.x * play.a.y - play.a.x * play.b.y)).roundToLong()
+        val a = ((play.prize.y / play.a.y) - (play.b.y * b) / play.a.y).roundToLong()
+        val test1 = (play.a.x * a + play.b.x * b) == play.prize.x
+        val test2 = (play.a.y * a + play.b.y * b) == play.prize.y
 
-        assert(test1)
-        assert(test2)
-        val result = if (a in 0.0..100.0 && b in 0.0..100.0) a.roundToLong() * 3 + b.roundToLong() else 0L
-        println("$a $b $result $test1 $test2")
+        val result = if (a in 0..MAX_PRESS && b in 0..MAX_PRESS && test1 && test2) a * 3 + b else 0L
         return result
     }
 
@@ -55,7 +49,7 @@ class Day13 : Base<List<Day13.Play>, Long>(13) {
 
 fun main() {
     Day13().submitPart1TestInput() // 480
-    Day13().submitPart1Input() // 38503 failed
+    Day13().submitPart1Input() // 36838
 //    Day13().submitPart2TestInput() //
 //    Day13().submitPart2Input() //
 }
