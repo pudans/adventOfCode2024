@@ -5,7 +5,7 @@ import java.io.File
 import java.util.LinkedList
 import kotlin.math.min
 
-class Day16 : Base<Day16.Data, Long>(16) {
+class Day16 : Base<Day16.Data, Int>(16) {
 
     data class Data(
         val start: PointX,
@@ -13,15 +13,16 @@ class Day16 : Base<Day16.Data, Long>(16) {
         val barriers: Set<PointX>
     )
 
-    override fun part1(input: Data): Long {
+    override fun part1(input: Data): Int {
         val visited = mutableMapOf<PointX, Long>()
         val queue = LinkedList<TraverseStep>()
-        queue.addLast(TraverseStep(Direction.RIGHT, input.start, 0, 0))
-        var result = Long.MAX_VALUE
+        queue.addLast(TraverseStep(Direction.RIGHT, input.start, mutableListOf(), 0))
+        var result = Int.MAX_VALUE
         while (queue.isNotEmpty()) {
             val step = queue.poll()
             step.execute(input, queue, visited)?.let {
-                result = min(result, it)
+                val newResult = it.first.size + it.second * 1000
+                result = min(result, newResult)
             }
         }
         return result
@@ -30,7 +31,7 @@ class Day16 : Base<Day16.Data, Long>(16) {
     class TraverseStep(
         private val direction: Direction,
         private val point: PointX,
-        private val pathSize: Int,
+        private val path: MutableList<PointX>,
         private val rotates: Int
     ) {
 
@@ -38,26 +39,30 @@ class Day16 : Base<Day16.Data, Long>(16) {
             data: Data,
             queue: LinkedList<TraverseStep>,
             visited: MutableMap<PointX, Long>
-        ): Long? {
-            val result = pathSize + rotates * 1000L
+        ): Pair<List<PointX>, Int>? {
+            val result = path.size + rotates * 1000L
             if (data.end == point) {
-                return result
+                return Pair(path, rotates)
             } else {
-                if (visited[point] == null || visited[point]!! > result + 1) {
-                    visited[point] = result + 1
+                if (visited[point] == null || visited[point]!! >= result - 1000L) {
+                    path.add(point)
+                    visited[point] = result
                     val newPoint1 = point.move1(direction)
                     if (!data.barriers.contains(newPoint1)) {
-                        queue.addLast(TraverseStep(direction, newPoint1, pathSize + 1, rotates))
+                        val newPath = mutableListOf<PointX>().apply { addAll(path) }
+                        queue.addLast(TraverseStep(direction, newPoint1, newPath, rotates))
                     }
                     val newDirection2 = direction.turnLeft()
                     val newPoint2 = point.move1(newDirection2)
                     if (!data.barriers.contains(newPoint2)) {
-                        queue.addLast(TraverseStep(newDirection2, newPoint2, pathSize + 1, rotates + 1))
+                        val newPath = mutableListOf<PointX>().apply { addAll(path) }
+                        queue.addLast(TraverseStep(newDirection2, newPoint2, newPath, rotates + 1))
                     }
                     val newDirection3 = direction.turnRight()
                     val newPoint3 = point.move1(newDirection3)
                     if (!data.barriers.contains(newPoint3)) {
-                        queue.addLast(TraverseStep(newDirection3, newPoint3, pathSize + 1, rotates + 1))
+                        val newPath = mutableListOf<PointX>().apply { addAll(path) }
+                        queue.addLast(TraverseStep(newDirection3, newPoint3, newPath, rotates + 1))
                     }
                 }
                 return null
@@ -65,8 +70,30 @@ class Day16 : Base<Day16.Data, Long>(16) {
         }
     }
 
-    override fun part2(input: Data): Long {
-        return 0L
+    override fun part2(input: Data): Int {
+        val visited = mutableMapOf<PointX, Long>()
+        val queue = LinkedList<TraverseStep>()
+        queue.addLast(TraverseStep(Direction.RIGHT, input.start, mutableListOf(), 0))
+        var result = Long.MAX_VALUE
+        val spotPath = mutableSetOf<PointX>()
+        while (queue.isNotEmpty()) {
+            val step = queue.poll()
+            step.execute(input, queue, visited)?.let {
+                val newResult = it.first.size + it.second * 1000L
+                if (newResult == result) {
+                    spotPath.addAll(it.first)
+                } else if (newResult < result) {
+                    spotPath.clear()
+                    spotPath.addAll(it.first)
+                    result = min(result, newResult)
+                } else {
+                }
+            }
+        }
+        spotPath.add(input.start)
+        spotPath.add(input.end)
+
+        return spotPath.size
     }
 
     override fun mapInputData(file: File): Data {
@@ -90,7 +117,7 @@ class Day16 : Base<Day16.Data, Long>(16) {
     }
 }
 
-//private fun printMap(data: Day16.Data, path: List<PointX>, visited: MutableList<Pair<PointX, Direction>>) {
+//private fun printMap(data: Day16.Data, path: Set<PointX>) {
 //    val maxX = data.barriers.maxOf { it.x }
 //    val maxY = data.barriers.maxOf { it.y }
 //    for (x in 0..maxX) {
@@ -98,11 +125,9 @@ class Day16 : Base<Day16.Data, Long>(16) {
 //        for (y in 0..maxY) {
 //            val point = PointX(x, y)
 //            when {
-//                visited.find { it.first == point } != null -> print("X")
 //                data.start == point -> print("S")
 //                data.end == point -> print("E")
 //                path.contains(point) -> print("O")
-//                visited.find { it.first == point } != null -> print("X")
 //                data.barriers.contains(point) -> print("#")
 //                else -> print(".")
 //            }
@@ -114,6 +139,6 @@ class Day16 : Base<Day16.Data, Long>(16) {
 fun main() {
     Day16().submitPart1TestInput() // 7036 / 11048
     Day16().submitPart1Input() // 160624
-//    Day16().submitPart2TestInput() //
-//    Day16().submitPart2Input() //
+    Day16().submitPart2TestInput() // 45 / 64
+    Day16().submitPart2Input() // 692
 }
