@@ -14,16 +14,15 @@ class Day16 : Base<Day16.Data, Long>(16) {
     )
 
     override fun part1(input: Data): Long {
-        val visited = mutableListOf<Pair<PointX, Direction>>()
+        val visited = mutableMapOf<PointX, Long>()
         val queue = LinkedList<TraverseStep>()
-        queue.addLast(TraverseStep(Direction.RIGHT, input.start, mutableListOf(), 0))
+        queue.addLast(TraverseStep(Direction.RIGHT, input.start, 0, 0))
         var result = Long.MAX_VALUE
         while (queue.isNotEmpty()) {
             val step = queue.poll()
             step.execute(input, queue, visited)?.let {
                 result = min(result, it)
             }
-            println("Step: ${queue.size} result: $result")
         }
         return result
     }
@@ -31,40 +30,34 @@ class Day16 : Base<Day16.Data, Long>(16) {
     class TraverseStep(
         private val direction: Direction,
         private val point: PointX,
-        private val path: MutableList<PointX>,
+        private val pathSize: Int,
         private val rotates: Int
     ) {
 
         fun execute(
             data: Data,
             queue: LinkedList<TraverseStep>,
-            visited: MutableList<Pair<PointX, Direction>>
+            visited: MutableMap<PointX, Long>
         ): Long? {
+            val result = pathSize + rotates * 1000L
             if (data.end == point) {
-                val result = path.size.toLong() + rotates * 1000L
-                println("Result: $result")
-                printMap(data, path)
                 return result
             } else {
-                if (!visited.contains(Pair(point, direction))) {
-                    path.add(point)
-                    visited.add(Pair(point, direction))
+                if (visited[point] == null || visited[point]!! > result + 1) {
+                    visited[point] = result + 1
                     val newPoint1 = point.move1(direction)
-                    if (!data.barriers.contains(newPoint1) && !path.contains(newPoint1)) {
-                        val newPath = mutableListOf<PointX>().apply { addAll(path) }
-                        queue.addLast(TraverseStep(direction, newPoint1, newPath, rotates))
+                    if (!data.barriers.contains(newPoint1)) {
+                        queue.addLast(TraverseStep(direction, newPoint1, pathSize + 1, rotates))
                     }
                     val newDirection2 = direction.turnLeft()
                     val newPoint2 = point.move1(newDirection2)
-                    if (!data.barriers.contains(newPoint2) && !path.contains(newPoint2)) {
-                        val newPath = mutableListOf<PointX>().apply { addAll(path) }
-                        queue.addLast(TraverseStep(newDirection2, newPoint2, newPath, rotates + 1))
+                    if (!data.barriers.contains(newPoint2)) {
+                        queue.addLast(TraverseStep(newDirection2, newPoint2, pathSize + 1, rotates + 1))
                     }
                     val newDirection3 = direction.turnRight()
                     val newPoint3 = point.move1(newDirection3)
-                    if (!data.barriers.contains(newPoint3) && !path.contains(newPoint3)) {
-                        val newPath = mutableListOf<PointX>().apply { addAll(path) }
-                        queue.addLast(TraverseStep(newDirection3, newPoint3, newPath, rotates + 1))
+                    if (!data.barriers.contains(newPoint3)) {
+                        queue.addLast(TraverseStep(newDirection3, newPoint3, pathSize + 1, rotates + 1))
                     }
                 }
                 return null
@@ -97,28 +90,30 @@ class Day16 : Base<Day16.Data, Long>(16) {
     }
 }
 
-private fun printMap(data: Day16.Data, path: List<PointX>) {
-    val maxX = data.barriers.maxOf { it.x }
-    val maxY = data.barriers.maxOf { it.y }
-    for (x in 0..maxX) {
-        println()
-        for (y in 0..maxY) {
-            val point = PointX(x, y)
-            when {
-                data.start == point -> print("S")
-                data.end == point -> print("E")
-                path.contains(point) -> print("O")
-                data.barriers.contains(point) -> print("#")
-                else -> print(".")
-            }
-        }
-    }
-    println()
-}
+//private fun printMap(data: Day16.Data, path: List<PointX>, visited: MutableList<Pair<PointX, Direction>>) {
+//    val maxX = data.barriers.maxOf { it.x }
+//    val maxY = data.barriers.maxOf { it.y }
+//    for (x in 0..maxX) {
+//        println()
+//        for (y in 0..maxY) {
+//            val point = PointX(x, y)
+//            when {
+//                visited.find { it.first == point } != null -> print("X")
+//                data.start == point -> print("S")
+//                data.end == point -> print("E")
+//                path.contains(point) -> print("O")
+//                visited.find { it.first == point } != null -> print("X")
+//                data.barriers.contains(point) -> print("#")
+//                else -> print(".")
+//            }
+//        }
+//    }
+//    println()
+//}
 
 fun main() {
     Day16().submitPart1TestInput() // 7036 / 11048
-    Day16().submitPart1Input() // 170592 failed
+    Day16().submitPart1Input() // 160624
 //    Day16().submitPart2TestInput() //
 //    Day16().submitPart2Input() //
 }
