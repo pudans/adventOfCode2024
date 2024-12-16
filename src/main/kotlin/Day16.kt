@@ -1,6 +1,6 @@
 package day01
 
-import day01.utils.Point
+import day01.utils.*
 import java.io.File
 
 class Day16 : Base<Day16.Data, Long>(16) {
@@ -12,12 +12,52 @@ class Day16 : Base<Day16.Data, Long>(16) {
     )
 
     override fun part1(input: Data): Long {
-        var rotates = 0
-        val path = mutableSetOf<Point<Int>>()
+        val result = traverse(input, Direction.RIGHT, input.start, mutableSetOf(), 0)
+        return result
+    }
 
-        printMap(input, path)
+    private fun traverse(
+        data: Data,
+        direction: Direction,
+        point: Point<Int>,
+        path: MutableSet<Point<Int>>,
+        rotates: Int
+    ): Long {
+        if (data.end == point) {
+            val result = path.size.toLong() + rotates * 1000L
+            println("Result: $result")
+            printMap(data, path)
+            return result
+        } else {
+            path.add(point)
+            println("Step: ${path.size}")
 
-        return path.size.toLong() + rotates * 1000L
+            return minOf(
+                run {
+                    val newPoint = point.move1(direction)
+                    return@run if (!data.barriers.contains(newPoint) && !path.contains(newPoint)) {
+                        val newPath = mutableSetOf<Point<Int>>().apply { addAll(path) }
+                        traverse(data, direction, newPoint, newPath, rotates)
+                    } else Long.MAX_VALUE
+                },
+                run {
+                    val newDirection = direction.turnRight()
+                    val newPoint = point.move1(newDirection)
+                    return@run if (!data.barriers.contains(newPoint) && !path.contains(newPoint)) {
+                        val newPath = mutableSetOf<Point<Int>>().apply { addAll(path) }
+                        traverse(data, newDirection, newPoint, newPath, rotates + 1)
+                    } else Long.MAX_VALUE
+                },
+                run {
+                    val newDirection = direction.turnLeft()
+                    val newPoint = point.move1(newDirection)
+                    return@run if (!data.barriers.contains(newPoint) && !path.contains(newPoint)) {
+                        val newPath = mutableSetOf<Point<Int>>().apply { addAll(path) }
+                        traverse(data, newDirection, newPoint, newPath, rotates + 1)
+                    } else Long.MAX_VALUE
+                }
+            )
+        }
     }
 
     override fun part2(input: Data): Long {
@@ -55,8 +95,8 @@ private fun printMap(data: Day16.Data, path: Set<Point<Int>>) {
             when {
                 data.start == point -> print("S")
                 data.end == point -> print("E")
+                path.contains(point) -> print("O")
                 data.barriers.contains(point) -> print("#")
-                path.contains(point) -> print("!")
                 else -> print(".")
             }
         }
@@ -65,8 +105,8 @@ private fun printMap(data: Day16.Data, path: Set<Point<Int>>) {
 }
 
 fun main() {
-    Day16().submitPart1TestInput() //
-//    Day16().submitPart1Input() //
+    Day16().submitPart1TestInput() // 7036
+    Day16().submitPart1Input() //
 //    Day16().submitPart2TestInput() //
 //    Day16().submitPart2Input() //
 }

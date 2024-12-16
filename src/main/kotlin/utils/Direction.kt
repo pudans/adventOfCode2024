@@ -20,3 +20,11 @@ fun Direction.turnRight(): Direction =
         Direction.DOWN -> Direction.LEFT
         Direction.LEFT -> Direction.UP
     }
+
+fun Direction.turnLeft(): Direction =
+    when (this) {
+        Direction.RIGHT -> Direction.UP
+        Direction.UP -> Direction.LEFT
+        Direction.DOWN -> Direction.RIGHT
+        Direction.LEFT -> Direction.DOWN
+    }
