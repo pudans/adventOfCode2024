@@ -88,7 +88,7 @@ class Day15 : Base<Day15.Data, Long>(15) {
     }
 }
 
-fun printMap(start: Point<Int>, boxes: List<Point<Int>>, barriers: List<Point<Int>>) {
+private fun printMap(start: Point<Int>, boxes: List<Point<Int>>, barriers: List<Point<Int>>) {
     val maxX = barriers.maxOf { it.x }
     val maxY = barriers.maxOf { it.y }
 
