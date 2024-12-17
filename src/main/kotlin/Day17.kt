@@ -1,7 +1,6 @@
 package day01
 
 import java.io.File
-import kotlin.math.pow
 
 class Day17 : Base<Day17.Data, String>(17) {
 
@@ -25,17 +24,17 @@ class Day17 : Base<Day17.Data, String>(17) {
             }
             when (program.opcode) {
                 0 -> { // adv
-                    a = (a / 2.0.pow(realOperand.toDouble())).toLong()
+                    a = a.shr(realOperand.toInt())
                 }
                 1 -> { // bxl
-                    b = b.xor(realOperand)
+                    b = b.xor(program.operand.toLong())
                 }
                 2 -> { // bst
-                    b = realOperand % 8
+                    b = realOperand.mod(8).toLong()
                 }
                 3 -> { // jnz
                     if (a != 0L) {
-                        i = (realOperand / 2).toInt()
+                        i = (program.operand / 2)
                         continue
                     }
                 }
@@ -43,21 +42,18 @@ class Day17 : Base<Day17.Data, String>(17) {
                     b = b.xor(c)
                 }
                 5 -> { // out
-                    output.add((realOperand % 8).toInt())
+                    output.add(realOperand.mod(8))
                 }
                 6 -> { // bdv
-                    b = (a / 2.0.pow(realOperand.toDouble())).toLong()
+                    b = a.shr(realOperand.toInt())
                 }
                 7 -> { // cdv
-                    c = (a / 2.0.pow(realOperand.toDouble())).toLong()
+                    c = a.shr(realOperand.toInt())
                 }
                 else -> Unit
             }
             i++
         }
-
-        println("a=$a b=$b c=$c")
-
         return output.joinToString(separator = ",") { it.toString() }
     }
 
@@ -79,7 +75,7 @@ class Day17 : Base<Day17.Data, String>(17) {
 
 fun main() {
     Day17().submitPart1TestInput() // 4,6,3,5,6,3,5,2,1,0
-    Day17().submitPart1Input() // 6,6,3,6,7,4,1,5,0 - Failed
+    Day17().submitPart1Input() // 2,7,2,5,1,2,7,3,7
 //    Day17().submitPart2TestInput() //
 //    Day17().submitPart2Input() //
 }
