@@ -10,8 +10,8 @@ class Day18 : Base<List<PointX>, String>(18) {
     override fun part1(input: List<PointX>): String {
         val maxBarriresCount = 1024 // 12
         val start = PointX(0, 0)
-//        val end = PointX(6, 6)
-        val end = PointX(70, 70)
+        val end = PointX(6, 6)
+//        val end = PointX(70, 70)
         val barriers = input.take(maxBarriresCount)
 
         val visited = mutableMapOf<PointX, Int>()
@@ -22,7 +22,6 @@ class Day18 : Base<List<PointX>, String>(18) {
             val step = queue.poll()
             step.execute(end, barriers, queue, visited)?.let {
                 val newResult = it
-                printMap18(barriers, newResult, end)
                 result = min(result, newResult.size)
             }
         }
@@ -30,7 +29,32 @@ class Day18 : Base<List<PointX>, String>(18) {
     }
 
     override fun part2(input: List<PointX>): String {
-        return "0"
+        val maxBarriersCount = 1024
+        var resultPoint: PointX? = null
+        val start = PointX(0, 0)
+//        val end = PointX(6, 6)
+        val end = PointX(70, 70)
+        val barriers = input.take(maxBarriersCount).toMutableList()
+
+        for (i in maxBarriersCount..input.lastIndex) {
+            val addedPoint = input[i]
+            barriers.add(addedPoint)
+            val visited = mutableMapOf<PointX, Int>()
+            val queue = LinkedList<TraverseStep>()
+            queue.addLast(TraverseStep(Direction.RIGHT, start, mutableListOf()))
+            var hasExit = false
+            while (queue.isNotEmpty()) {
+                val step = queue.poll()
+                val path = step.execute(end, barriers, queue, visited)
+                if (path != null) {
+                    hasExit = true
+                    break
+                }
+            }
+            resultPoint = addedPoint
+            if (!hasExit) break
+        }
+        return "${resultPoint!!.y},${resultPoint!!.x}"
     }
 
     class TraverseStep(
@@ -78,24 +102,24 @@ class Day18 : Base<List<PointX>, String>(18) {
         file.readLines().map { it.split(",") }.map { PointX(it[1].toInt(), it[0].toInt()) }
 }
 
-private fun printMap18(data: List<PointX>, path: List<PointX>, endPoint: PointX) {
-    for (x in 0..endPoint.x) {
-        println()
-        for (y in 0..endPoint.y) {
-            val point = PointX(x, y)
-            when {
-                path.contains(point) -> print("O")
-                data.contains(point) -> print("#")
-                else -> print(".")
-            }
-        }
-    }
-    println()
-}
+//private fun printMap18(data: List<PointX>, path: List<PointX>, endPoint: PointX) {
+//    for (x in 0..endPoint.x) {
+//        println()
+//        for (y in 0..endPoint.y) {
+//            val point = PointX(x, y)
+//            when {
+//                path.contains(point) -> print("O")
+//                data.contains(point) -> print("#")
+//                else -> print(".")
+//            }
+//        }
+//    }
+//    println()
+//}
 
 fun main() {
 //    Day18().submitPart1TestInput() // 22
-    Day18().submitPart1Input() // 226
-//    Day18().submitPart2TestInput() //
-//    Day18().submitPart2Input() //
+//    Day18().submitPart1Input() // 226
+//    Day18().submitPart2TestInput() // 6,1
+    Day18().submitPart2Input() // 60,46
 }
