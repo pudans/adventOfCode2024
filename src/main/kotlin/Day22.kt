@@ -4,7 +4,27 @@ import java.io.File
 
 class Day22 : Base<List<Long>, Long>(22) {
 
-    override fun part1(input: List<Long>): Long = 0L
+    override fun part1(input: List<Long>): Long = input.fold(0L) { r, secret ->
+        var result = secret
+        repeat(2000) {
+            val d = result * 64L
+            result = result.mix(d)
+            result = result.prune()
+
+            val d1 = result / 32
+            result = result.mix(d1)
+            result = result.prune()
+
+            val d3 = result * 2048L
+            result = result.mix(d3)
+            result = result.prune()
+        }
+        r + result
+    }
+
+    private fun Long.mix(secret: Long): Long = this.xor(secret)
+
+    private fun Long.prune(): Long = this.mod(16777216L)
 
     override fun part2(input: List<Long>): Long = 0L
 
@@ -12,8 +32,8 @@ class Day22 : Base<List<Long>, Long>(22) {
 }
 
 fun main() {
-    Day22().submitPart1TestInput() //
-//    Day22().submitPart1Input() //
+    Day22().submitPart1TestInput() // 37327623
+    Day22().submitPart1Input() // 20071921341
 //    Day22().submitPart2TestInput() //
 //    Day22().submitPart2Input() //
 }
