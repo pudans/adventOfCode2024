@@ -75,7 +75,7 @@ class Day24 : Base<Day24.Data, Long>(24) {
 
 fun main() {
     Day24().submitPart1TestInput() // 2024
-    Day24().submitPart1Input() //
+    Day24().submitPart1Input() // 42883464055378
 //    Day24().submitPart2TestInput() //
 //    Day24().submitPart2Input() //
 }
