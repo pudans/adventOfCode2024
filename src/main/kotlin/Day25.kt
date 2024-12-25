@@ -46,7 +46,7 @@ class Day25 : Base<Day25.Data, Int>(25) {
 
 fun main() {
     Day25().submitPart1TestInput() // 3
-    Day25().submitPart1Input() //
+    Day25().submitPart1Input() // 3021
 //    Day25().submitPart2TestInput() //
 //    Day25().submitPart2Input() //
 }
