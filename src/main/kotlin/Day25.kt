@@ -10,8 +10,17 @@ class Day25 : Base<Day25.Data, Int>(25) {
     )
 
     override fun part1(input: Data): Int {
-        println(input)
-        return 0
+        var result = 0
+        input.keys.forEach { key ->
+            input.locks.forEach { lock ->
+                var res = true
+                for (i in 0..4) {
+                    res = res && lock[i] + key[i] <= 5
+                }
+                if (res) result++
+            }
+        }
+        return result
     }
 
     override fun part2(input: Data): Int = 0
@@ -22,7 +31,7 @@ class Day25 : Base<Day25.Data, Int>(25) {
         val fields = file.readLines().chunked(8)
         fields.forEach { field ->
             val shape = mutableListOf(0, 0, 0, 0, 0)
-            for (i in 1..6) {
+            for (i in 1..5) {
                 field[i].forEachIndexed { index, c ->
                     if (c == '#') shape[index] = shape[index] + 1
                 }
@@ -36,8 +45,8 @@ class Day25 : Base<Day25.Data, Int>(25) {
 }
 
 fun main() {
-    Day25().submitPart1TestInput() //
-//    Day25().submitPart1Input() //
+    Day25().submitPart1TestInput() // 3
+    Day25().submitPart1Input() //
 //    Day25().submitPart2TestInput() //
 //    Day25().submitPart2Input() //
 }
